@@ -80,10 +80,13 @@ class ConverterState extends State<Converter> {
             ),
             // Image - Fifth (5) element ------------------------
             Padding(
-              padding: EdgeInsets.all(20.0),
+              padding: EdgeInsets.all(30.0),
               child: Container(
                 height: 180.0,
-                color: Colors.blue,
+                // color: Colors.blue,
+                child: Image(
+                  image: AssetImage('img/money.png'),
+                ),
               ),
             )
           ],
