@@ -18,21 +18,38 @@ class Converter extends StatefulWidget {
 class ConverterState extends State<Converter> {
   var selectedVal = 'Dollar';
   var currencyType = ['Dollar', 'Pound'];
+  var _formKey = GlobalKey<FormState>();
+  var result = '';
+
+  TextEditingController rupeesController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Currency Convertor'),
+        title: Text('Currency Converter'),
       ),
       body: Form(
+        key: _formKey,
         child: ListView(
           children: [
             // Currency Edit Field - First (1) element ------------------------
             Padding(
                 padding: EdgeInsets.all(20.0),
                 child: TextFormField(
-                  validator: (val) {},
+                  controller: rupeesController,
+                  validator: (val) {
+                    val = val.trim().replaceAll(' ', '');
+                    if (val.isEmpty || val == null) {
+                      return 'Enter Rupees';
+                    } else if (val.contains(',') || val.contains('-')) {
+                      return 'Enter Rupees in digits';
+                    } else if (val.contains(' ')) {
+                      return 'Spaces are not allowed';
+                    }
+                    return null;
+                  },
+                  keyboardType: TextInputType.number,
                   decoration: InputDecoration(
                       labelText: 'Rupees',
                       hintText: 'Enter Rupees',
@@ -64,20 +81,31 @@ class ConverterState extends State<Converter> {
                     'Convert',
                     style: TextStyle(fontSize: 19.0),
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    FocusScope.of(context).unfocus();
+                    setState(() {
+                      if (_formKey.currentState.validate()) {
+                        result = calculateResult();
+                      }
+                    });
+                  },
                 ),
               ),
             ),
             // Result Text Field - Fourth (4) element ------------------------
             Padding(
-              padding: EdgeInsets.all(20.0),
-              child: Center(
-                child: Text(
-                  'Result',
-                  style: TextStyle(fontSize: 20.0),
-                ),
-              ),
-            ),
+                padding: EdgeInsets.all(20.0),
+                child: Center(
+                  child: Container(
+                    // width: 300.0,
+                    // decoration: BoxDecoration(
+                    //     border: Border.all(color: Colors.blueAccent)),
+                    child: Text(
+                      result,
+                      style: TextStyle(fontSize: 20.0),
+                    ),
+                  ),
+                )),
             // Image - Fifth (5) element ------------------------
             Padding(
               padding: EdgeInsets.all(30.0),
@@ -93,5 +121,17 @@ class ConverterState extends State<Converter> {
         ),
       ),
     );
+  }
+
+  String calculateResult() {
+    print("--->");
+    double rupees =
+        double.parse(rupeesController.text.trim().replaceAll(' ', ''));
+    if (selectedVal == 'Dollar') {
+      return '${(rupees / 74.14).toStringAsFixed(2)} Dollars';
+    } else if (selectedVal == 'Pound') {
+      return '${(rupees / 102.40).toStringAsFixed(2)} Pounds';
+    }
+    return null;
   }
 }
